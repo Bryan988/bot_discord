@@ -4,6 +4,6 @@ module.exports = {
     name: 'hi',
     description: 'Say Hello!',
     execute(message, args) {
-        message.channel.send('Hello '+message.author.username);
+        message.channel.send('Hello '+message.author.username + 'id : '+message.author.id);
     },
 };
