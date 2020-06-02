@@ -8,7 +8,7 @@ module.exports = {
     async execute(message, args) {
         let xp = Math.floor(Math.random() * (100 - 50) + 50);
         try{
-             await Xp.farm(message.author.id,message.author.username,xp);
+             await Xp.farm(message.author.id,message.author.username,xp,message);
              await message.channel.send("You just earned " + xp + " xp");
         }
         catch (e) {

@@ -27,7 +27,7 @@ const Xp={
             });
         }
     },
-    farm:  async function(idUser,username,xp){
+    farm:  async function(idUser,username,xp,message){
         if(!(await this.findUser(idUser))){
             try{
                 await this.addUser(idUser,username);
@@ -36,9 +36,35 @@ const Xp={
                 console.error(err);
             }
         }
-        connection.query('UPDATE Xp SET xp=xp + ? WHERE idUSer=?',[xp,idUser],(err)=>{
+        connection.query('UPDATE Xp SET xp=xp + ? WHERE idUser=?',[xp,idUser],(err)=>{
             if(err)throw err;
         });
+        try {
+            let result=await this.checklevel(idUser);
+            console.log(result);
+            if(result[0]){
+                connection.query("UPDATE XP SET level=level+1 WHERE idUser=?",[idUser],(err)=>{
+                    if(err)throw err;
+                    let level=parseInt(result[1])+1;
+                    return message.reply("You just advanced to level "+level +" ! ");
+                })
+            }
+        }catch (e) {
+            console.error(e);
+        }
+    },
+    checklevel: function(idUser){
+        return new Promise(((resolve, reject) => {
+            connection.query(
+                "SELECT x.xp,x.level,l.xp as base FROM Xp x JOIN Level l ON x.level=l.level WHERE idUser=?",
+                [idUser],
+                (err,result)=>{
+                    if(err)reject(err);
+
+                    resolve([(result[0].xp>result[0].base),result[0].level]);
+                }
+            );
+        }))
     }
 
 
