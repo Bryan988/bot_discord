@@ -15,8 +15,7 @@ const Xp={
         return new Promise((resolve,reject) => {
             connection.query('SELECT * FROM Xp WHERE idUser=?',[idUser],(err,results)=> {
                 if(err)reject(err);
-                console.log("statement : "+(typeof results[0] !== 'undefined'));
-                resolve((results[0] !== 'undefined'));
+                resolve((results[0] !== undefined));
             });
         });
     },
@@ -24,15 +23,14 @@ const Xp={
         if(!(await this.findUser(idUser))){
             connection.query('INSERT INTO Xp SET ?',{idUser:idUser,username:username},(err)=>{
                 if(err)throw err;
+                console.log("user created");
             });
         }
     },
     farm:  async function(idUser,username,xp){
-        console.log("farm : "+await this.findUser(idUser));
         if(!(await this.findUser(idUser))){
             try{
-                console.log("adding "+idUser);
-                this.addUser(idUser,username);
+                await this.addUser(idUser,username);
             }
             catch(err) {
                 console.error(err);
