@@ -36,8 +36,12 @@ const Xp={
                 console.error(err);
             }
         }
-        connection.query('UPDATE Xp SET xp=xp + ? WHERE idUser=?',[xp,idUser],(err)=>{
-            if(err)throw err;
+        await new Promise((resolve,reject) =>
+        {
+            connection.query('UPDATE Xp SET xp=xp + ? WHERE idUser=?', [xp, idUser], (err) => {
+                if (err) reject(err);
+                resolve();
+            });
         });
         try {
             let result=await this.checklevel(idUser);
@@ -65,6 +69,31 @@ const Xp={
                 }
             );
         }))
+    },
+    getRank: function(idUser){
+        return new Promise((resolve, reject) => {
+            let rank=1;
+            let obj={};
+            connection.query('SELECT x.idUser,x.xp,x.level,l.xp AS base FROM Xp x JOIN Level l ON x.level=l.level ORDER BY x.xp DESC',(err,result)=>{
+                if(err)reject(err);
+                for(let row of result){
+                   if(row.idUser==idUser){
+                       console.log("entered");
+                        obj.realxp=row.xp;
+                        obj.basexp=row.base;
+                        obj.level=row.level;
+                        obj.rank=rank;
+                        resolve(obj);
+                    }
+
+                    rank++;
+                }
+                if(obj.realxp===undefined){
+                    reject("No user found");
+                }
+
+            })
+        })
     }
 
 
